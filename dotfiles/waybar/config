@@ -1,0 +1,193 @@
+[
+    {
+        "name": "top",
+        "layer": "top",
+        "position": "top",
+        "margin-top": 5,
+        "margin-right": 10,
+        "margin-left": 10,
+        "modules-left": ["custom/launcher","custom/notification","hyprland/workspaces","network"],
+        "modules-center": ["hyprland/window"],
+        "modules-right": ["mpris","group/volume","tray","battery","group/brightness", "clock","custom/power"],
+        "reload_style_on_change": true,
+        "battery": {
+            "format": "{capacity}% {icon}",
+            "tooltip-format": "{timeTo}\nHealth:{health}%",
+            "interval": 5,
+            "states": {
+                "warning": 25,
+                "critical": 20
+            },
+            "format-icons": {
+                "default": ["", "", "", "", ""],
+                "charging": [" 󱐋", " 󱐋", " 󱐋", " 󱐋", " 󱐋"]
+            },
+            "events": {
+                "on-discharging-warning": "notify-send -u low 'Low Battery'",
+                "on-discharging-critical": "notify-send -u critical 'Very Low Battery'",
+                "on-charging-80": "notify-send -u critical 'Charge Threshold Reached'",
+                "on-discharging": "notify-send -u low 'Discharging'",
+                "on-charging": "notify-send -u low 'Charging'"
+            }
+        },
+        "clock": {
+            "format": "{:%H:%M}",
+            "tooltip-format": "{:%A %d %B %Y}"
+        },
+       "group/volume": {
+     "orientation": "horizontal",
+     "drawer": {
+        "transition-duration": 500,
+        "children-class": "volume-slider",
+        "transition-left-to-right": false
+    },
+    "modules": [
+        "pulseaudio",
+        "pulseaudio/slider"
+         ]
+        },
+        "pulseaudio": {
+            "format": "{volume}% {icon}",
+            "format-bluetooth": "{volume}% {icon}",
+            "format-muted": "",
+            "format-icons": {
+                "alsa_output.pci-0000_00_1f.3.analog-stereo": "",
+                "alsa_output.pci-0000_00_1f.3.analog-stereo-muted": "",
+                "headphone": "",
+                "hands-free": "",
+                "headset": "",
+                "phone": "",
+                "phone-muted": "",
+                "portable": "",
+                "car": "",
+                "default": ["", ""]
+            },
+            "scroll-step": 1,
+            "on-click-right": "pavucontrol",
+            "ignored-sinks": ["Easy Effects Sink"]
+        },
+        "pulseaudio/slider": {
+            "min": 0,
+            "max": 100,
+            "orientation": "horizontal"
+        },
+        "network": {
+            "interface": "wlo1",
+            "interval": 1,
+            "format": " {bandwidthUpBits}  {bandwidthDownBits}",
+            //"format": "{ifname}",
+            //"format-wifi": "{essid} ({signalStrength}%)",
+            //"format-ethernet": "{ipaddr}/{cidr} 󰊗",
+            "format-disconnected": "", //An empty format will hide the module.
+            "tooltip-format": "{ifname} via {gwaddr} 󰊗",
+            "tooltip-format-wifi": "{essid} ({signalStrength}%) ",
+            "tooltip-format-ethernet": "{ifname} ",
+            "tooltip-format-disconnected": "Disconnected",
+            "max-length": 30,
+        },
+        "hyprland/workspaces": {
+            "format": "{name}",
+            "on-click": "activate",
+            "sort-by-number": true,
+            "active-only": false,
+            "all-outputs": true,
+            "format": "{name}",
+            "show-special": false,
+            "persistent-workspaces": {}
+        },
+        "hyprland/window": {
+            "format": "{title}",
+            "icon": true,
+            "max-length": 50,
+            "rewrite": {
+                "(.*) - Zen Browser": "🌎 $1",
+                "(.*) - zsh": "> [$1]"
+            }
+        },
+        "tray": {
+            "icon-size": 21,
+            "spacing": 16,
+        },
+        "custom/launcher": {
+            "on-click": "rofi -show window",
+        },
+        "custom/clipboard": {
+            "format": "",
+            "on-click": "cliphist list | rofi -dmenu -display-columns 2 | cliphist decode | wl-copy",
+            "tooltip": false
+        },
+
+        "group/brightness": {
+        "orientation": "horizontal",
+        "drawer": {
+            "transition-duration": 500,
+            "children-class": "brightness-slider",
+            "transition-left-to-right": false
+        },
+        "modules": [
+            "backlight",
+            "backlight/slider"
+          ]
+
+        },
+        "backlight": {
+            "format": "{percent}% {icon}",
+            "format-icons": ["󰃞", "󰃟", "󰃠"],
+        },
+        "backlight/slider": {
+            "min": 5,
+            "max": 100,
+            "orientation": "horizontal"
+        },
+        "custom/power": {
+            "format" : "⏻",
+            "tooltip": false,
+            "menu": "on-click",
+            "menu-file": "~/.config/waybar/power_menu.xml",
+            "menu-actions": {
+                "shutdown": "systemctl poweroff",
+                "reboot": "systemctl reboot",
+                "suspend": "systemctl suspend",
+                "hibernate": "systemctl hibernate",
+                "logout": "command -v hyprshutdown >/dev/null 2>&1 && hyprshutdown || hyprctl dispatch 'hl.dsp.exit()'"
+            }
+        },
+        "custom/notification": {
+            "tooltip": true,
+            "format": "{icon}",
+            "format-icons": {
+                "notification": "󱅫",
+                "none": "󰂜",
+                "dnd-notification": "󰂠",
+                "dnd-none": "󰪓",
+                "inhibited-notification": "󰂛",
+                "inhibited-none": "󰪑",
+                "dnd-inhibited-notification": "󰂛",
+                "dnd-inhibited-none": "󰪑"
+            },
+            "return-type": "json",
+            "exec-if": "which swaync-client",
+            "exec": "swaync-client -swb",
+            "on-click": "swaync-client -t -sw",
+            "on-click-right": "swaync-client -d -sw",
+            "escape": true
+        },
+        "mpris": {
+            "format": "{status_icon} {player_icon} {dynamic}",
+            "interval": 1,
+            "format-paused": "{status_icon} {player_icon} {dynamic}",
+            "dynamic-len": 20,
+            "dynamic-importance-order": ["position","title", "artist", "album", "length"],
+            "player-icons": {
+                "default": "",
+                "youtube music": "<span foreground=\"#1DB954\"></span>",
+                "mpv": "🎵"
+            },
+            "status-icons": {
+                "playing": "▶",
+                "paused": "⏸"
+            }
+    // "ignored-players": ["firefox"]
+        }
+    }
+]
