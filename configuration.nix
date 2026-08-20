@@ -2,7 +2,7 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, pkgs, input,... }:
+{ config, pkgs, ... }:
 
 {
   imports =
@@ -12,7 +12,9 @@
 
   # Bootloader.
   boot.loader.grub.enable = true;
-  boot.loader.grub.device = "/dev/sda";
+  boot.loader.grub.efiSupport = true;
+  boot.loader.efi.canTouchEfiVariables = true;
+  boot.loader.grub.device = "nodev";
   boot.loader.grub.useOSProber = true;
 
   networking.hostName = "nixos"; # Define your hostname.
