@@ -12,16 +12,16 @@ git clone https://github.com/royal-coem/nixos-config.git ~/nixos-config
 cd ~/nixos-config
 
 4. adapter le matériel:
-   sudo nixos-generate-config --dir /tmp
+   sudo nixos-generate-config --dir /tmp |
    cp /tmp/hardware-configuration.nix .
 
 5.Aligner le nom d'utilisateur:
  
 Vérifie que ton identifiant Unix local correspond bien dans les fichiers suivants 
 
-  configuration.nix : users.users.<username>
+  configuration.nix : users.users.<username> |
     
-  home.nix : home.username = "<username>" et home.homeDirectory = "/home/<username>"
+  home.nix : home.username = "<username>" | home.homeDirectory = "/home/<username>" |
 
   flake.nix : home-manager.users.<username>
     
@@ -29,7 +29,7 @@ Vérifie que ton identifiant Unix local correspond bien dans les fichiers suivan
 
 Indexe les changements matériels dans Git et relance la reconstruction système :
 
-git add .
+git add . |
 sudo nixos-rebuild switch --flake .#nixos
 
 7. lance hyprland
