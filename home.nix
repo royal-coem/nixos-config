@@ -3,8 +3,8 @@
 {
   # Home Manager needs a bit of information about you and the paths it should
   # manage.
-  home.username = "noah";
-  home.homeDirectory = "/home/noah";
+  home.username = "royalc";
+  home.homeDirectory = "/home/royalc";
 
   #fasfetch 3D
  
