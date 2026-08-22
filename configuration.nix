@@ -176,6 +176,7 @@
     mpv
     thunderbird
     brave
+    discord-ptb
     
   ];
 
