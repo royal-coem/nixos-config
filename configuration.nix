@@ -88,9 +88,9 @@
   # services.xserver.libinput.enable = true;
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
-  users.users."noah" = {
+  users.users."royalc" = {
     isNormalUser = true;
-    description = "noah";
+    description = "royalc";
     extraGroups = [ "networkmanager" "wheel" ];
     packages = with pkgs; [
       kdePackages.kate
