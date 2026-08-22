@@ -177,7 +177,10 @@
     thunderbird
     brave
     discord-ptb
-    
+    (discord.override {
+      # withOpenASAR = true; # can do this here too
+      withVencord = true;
+    })
   ];
 
   # Some programs need SUID wrappers, can be configured further or are
