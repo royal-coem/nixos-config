@@ -87,19 +87,6 @@
   # Enable touchpad support (enabled default in most desktopManager).
   # services.xserver.libinput.enable = true;
 
-  fileSystems."/home/royalce/Jeux" = {
-    device = "/dev/disk/by-uuid/1088E3AA88E38D12";
-    fsType = "ntfs-3g"; # Remplace par ntfs, btrfs, etc. selon ton disque
-    options = [
-    "defaults"
-    "nofail"
-    "uid=1000"
-    "gid=100"
-    "rw"
-    "umask=000"
-   ];
-  };
-
   programs.zsh = {
     enable = true;
     autosuggestions.enable = true;
