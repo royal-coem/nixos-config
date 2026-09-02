@@ -24,7 +24,7 @@
       "gpu"
       "swap"
       "disk"
-    ];
+     ];
     shading = "mMz|"; 		
     separator = "--";
     speed = 1.0;

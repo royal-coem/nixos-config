@@ -8,7 +8,7 @@
         "margin-left": 10,
         "modules-left": ["custom/launcher","custom/notification","hyprland/workspaces","network"],
         "modules-center": ["hyprland/window"],
-        "modules-right": ["mpris","group/volume","tray","battery","group/brightness", "clock","custom/power"],
+        "modules-right": ["custom/btop","mpris","group/volume","tray","battery","group/brightness","clock","custom/power",],
         "reload_style_on_change": true,
         "battery": {
             "format": "{capacity}% {icon}",
@@ -76,7 +76,7 @@
             "interval": 1,
             "format": " {bandwidthUpBits}  {bandwidthDownBits}",
             //"format": "{ifname}",
-            //"format-wifi": "{essid} ({signalStrength}%)",
+            //"format-wifi":playerctl "{essid} ({signalStrength}%)",
             //"format-ethernet": "{ipaddr}/{cidr} 󰊗",
             "format-disconnected": "", //An empty format will hide the module.
             "tooltip-format": "{ifname} via {gwaddr} 󰊗",
@@ -172,22 +172,21 @@
             "on-click-right": "swaync-client -d -sw",
             "escape": true
         },
-        "mpris": {
-            "format": "{status_icon} {player_icon} {dynamic}",
-            "interval": 1,
-            "format-paused": "{status_icon} {player_icon} {dynamic}",
-            "dynamic-len": 20,
-            "dynamic-importance-order": ["position","title", "artist", "album", "length"],
-            "player-icons": {
-                "default": "",
-                "youtube music": "<span foreground=\"#1DB954\"></span>",
-                "mpv": "🎵"
-            },
-            "status-icons": {
-                "playing": "▶",
-                "paused": "⏸"
-            }
-    // "ignored-players": ["firefox"]
-        }
+        "custom/mpris": {
+        "format": "🎵 {}",
+        "exec": "playerctl metadata --format '{{ artist }} - {{ title }}' 2>/dev/null || echo ''",
+        "interval": 2,
+        "on-click": "playerctl play-pause",
+        "on-scroll-up": "playerctl next",
+        "on-scroll-down": "playerctl previous",
+        "max-length": 30
+
+        },
+        "custom/btop": {
+        "format": "📊",
+        "on-click": "kitty --class btop-float -e btop",
+        "tooltip": false
+    },
+
     }
 ]

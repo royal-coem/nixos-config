@@ -87,10 +87,52 @@
   # Enable touchpad support (enabled default in most desktopManager).
   # services.xserver.libinput.enable = true;
 
+  fileSystems."/home/royalce/Jeux" = {
+    device = "/dev/disk/by-uuid/1088E3AA88E38D12";
+    fsType = "ntfs-3g"; # Remplace par ntfs, btrfs, etc. selon ton disque
+    options = [
+    "defaults"
+    "nofail"
+    "uid=1000"
+    "gid=100"
+    "rw"
+    "umask=000"
+   ];
+  };
+
+  programs.zsh = {
+    enable = true;
+    autosuggestions.enable = true;
+    syntaxHighlighting.enable = true;
+    promptInit = "source ${pkgs.zsh-powerlevel10k}/share/zsh-powerlevel10k/powerlevel10k.zsh-theme";
+  
+    interactiveShellInit = ''
+    fetch
+  '';
+
+  shellAliases = {
+    nixconf = "sudo nvim ~/nixos-config/configuration.nix";
+    nswitch = "sudo nixos-rebuild switch --flake ~/nixos-config/#nixos";
+    homenix = "sudo nvim ~/nixos-config/home.nix";
+    flakenix = "sudo nvim ~/nixos-config/flake.nix";
+    hyprconf = "sudo nvim ~/nixos-config/dotfiles/hypr/hyprland.conf";
+    nixlist = "sudo nixos-rebuild list-generations";
+    delconf = "sudo nix-env --profile /nix/var/nix/profiles/system --delete-generations";
+    nixclean = "sudo nix-collect-garbage";
+  };
+ };
+ 
+  nix.gc = {
+  automatic = true;
+  dates = "weekly";
+  options = "--delete-older-than 7d";
+ };
+
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users."royalc" = {
     isNormalUser = true;
     description = "royalc";
+    shell = pkgs.zsh;
     extraGroups = [ "networkmanager" "wheel" ];
     packages = with pkgs; [
       kdePackages.kate
@@ -137,10 +179,18 @@
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
 
+  # Activer le support de Discover et PackageKit
+  services.packagekit.enable = true;
+
+  # Si tu veux aussi utiliser les applications Flatpak via Discover (très recommandé)
+  services.flatpak.enable = true;
+
+  systemd.services.packagekit.wantedBy = [ "multi-user.target" ];
+
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
-  #  vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
+    neovim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
     wget
     fastfetch
     wl-clip-persist
@@ -149,6 +199,8 @@
     brave
     cava
     cmatrix
+    playerctl
+
     # UI & Desktop
     rofi
     waybar
@@ -158,7 +210,10 @@
     hypridle
     font-awesome
     nerd-fonts.jetbrains-mono
-
+    fetch
+    hyprpaper
+    psmisc
+    
     # Outils & Système
     kitty
     grim
@@ -170,6 +225,7 @@
     fastfetch
     wl-clipboard
     pinta
+    libnotify
 
     # Apps
     vscode
@@ -177,7 +233,16 @@
     thunderbird
     brave
     vesktop
-  ];
+    modrinth-app
+    kdePackages.discover
+    firefox
+    easyeffects
+    mapscii
+    pipes
+    jq
+    unzip
+    cbonsai
+   ];
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
@@ -186,6 +251,12 @@
   #   enable = true;
   #   enableSSHSupport = true;
   # };
+
+  qt = {
+   enable = true;
+   platformTheme = "kde";
+   style = "breeze";
+  };
 
   # List services that you want to enable:
 
