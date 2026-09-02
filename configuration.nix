@@ -176,11 +176,7 @@
     mpv
     thunderbird
     brave
-    discord-ptb
-    (discord.override {
-      # withOpenASAR = true; # can do this here too
-      withVencord = true;
-    })
+    vesktop
   ];
 
   # Some programs need SUID wrappers, can be configured further or are
