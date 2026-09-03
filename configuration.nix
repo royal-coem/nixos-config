@@ -305,6 +305,12 @@
   # Or disable the firewall altogether.
   # networking.firewall.enable = false;
 
+  fileSystems."/home/royalc/Jeux" = {
+    device = "/dev/disk/by-uuid/1088E3AA88E38D12";
+    fsType = "ntfs-3g"; # ou ntfs3
+    options = [ "rw" "uid=1000" "gid=100" "nofail" ];
+  };
+
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
   # on your system were taken. It‘s perfectly fine and recommended to leave
