@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Liste des animations disponibles
-animations=("cmatrix" "pipes" "cbonsaii")
+animations=("cmatrix" "pipes" "cbonsai" "mapscii")
 
 # Choisit l'une d'elles aléatoirement
 selected=${animations[$RANDOM % ${#animations[@]}]}
@@ -14,7 +14,9 @@ case $selected in
     pipes)
         kitty --class "startup-anim" -e pipes.sh
         ;;
-    cbonsaii)
-        kitty --class "startup-anim" -e cbonsaii
+    cbonsai)
+        kitty --class "startup-anim" -e cbonsai
         ;;
+    mapscii)
+	kitty --class "startup-anim" -e mapscii
 esac

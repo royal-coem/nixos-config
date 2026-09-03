@@ -105,7 +105,7 @@
     hyprconf = "sudo nvim ~/nixos-config/dotfiles/hypr/hyprland.conf";
     nixlist = "sudo nixos-rebuild list-generations";
     delconf = "sudo nix-env --profile /nix/var/nix/profiles/system --delete-generations";
-    nixclean = "sudo nix-collect-garbage";
+    nixclean = "sudo nix-collect-garbage -d";
   };
  };
  
@@ -115,12 +115,47 @@
   options = "--delete-older-than 7d";
  };
 
+  virtualisation.libvirtd = {
+    enable = true;
+    qemu = {
+      package = pkgs.qemu_kvm;
+      runAsRoot = true;
+    };
+
+  };
+ 
+  xdg.portal = {
+    enable = true;
+    extraPortals = [
+      pkgs.xdg-desktop-portal-hyprland
+      pkgs.xdg-desktop-portal-gtk
+    ];
+    config = {
+      common = {
+        default = [ "hyprland" "gtk" ];
+      };
+      hyprland = {
+        default = [ "hyprland" "gtk" ];
+      };
+    };
+  };
+
+  # 2. Configurer OBS Studio avec les wrappers Wayland / PipeWire
+  programs.obs-studio = {
+    enable = true;
+    plugins = with pkgs.obs-studio-plugins; [
+      wlrobs
+      obs-vkcapture
+      obs-pipewire-audio-capture
+    ];
+  };
+
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users."royalc" = {
     isNormalUser = true;
     description = "royalc";
     shell = pkgs.zsh;
-    extraGroups = [ "networkmanager" "wheel" ];
+    extraGroups = [ "networkmanager" "wheel" "libvirtd" "kvm" ];
     packages = with pkgs; [
       kdePackages.kate
       # UI & Desktop
@@ -187,6 +222,10 @@
     cava
     cmatrix
     playerctl
+    jdk8
+    jdk17
+    jdk21
+    jdk25
 
     # UI & Desktop
     rofi
@@ -213,6 +252,8 @@
     wl-clipboard
     pinta
     libnotify
+    wev
+    evtest
 
     # Apps
     vscode
@@ -229,6 +270,14 @@
     jq
     unzip
     cbonsai
+    gnome-boxes
+    (pkgs.wrapOBS {
+    plugins = with pkgs.obs-studio-plugins; [
+      wlrobs
+      obs-pipewire-audio-capture
+      obs-vkcapture
+     ];
+    })
    ];
 
   # Some programs need SUID wrappers, can be configured further or are
