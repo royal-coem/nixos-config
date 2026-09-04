@@ -115,41 +115,6 @@
   options = "--delete-older-than 7d";
  };
 
-  virtualisation.libvirtd = {
-    enable = true;
-    qemu = {
-      package = pkgs.qemu_kvm;
-      runAsRoot = true;
-    };
-
-  };
- 
-  xdg.portal = {
-    enable = true;
-    extraPortals = [
-      pkgs.xdg-desktop-portal-hyprland
-      pkgs.xdg-desktop-portal-gtk
-    ];
-    config = {
-      common = {
-        default = [ "hyprland" "gtk" ];
-      };
-      hyprland = {
-        default = [ "hyprland" "gtk" ];
-      };
-    };
-  };
-
-  # 2. Configurer OBS Studio avec les wrappers Wayland / PipeWire
-  programs.obs-studio = {
-    enable = true;
-    plugins = with pkgs.obs-studio-plugins; [
-      wlrobs
-      obs-vkcapture
-      obs-pipewire-audio-capture
-    ];
-  };
-
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users."royalc" = {
     isNormalUser = true;
@@ -183,7 +148,7 @@
       pinta
   
       # Apps
-      vscode
+     
       mpv
       # thunderbird
     ];
@@ -239,6 +204,7 @@
     fetch
     hyprpaper
     psmisc
+    primslauncher
     
     # Outils & Système
     kitty
@@ -248,7 +214,6 @@
     cliphist
     pavucontrol
     btop
-    fastfetch
     wl-clipboard
     pinta
     libnotify
@@ -256,28 +221,14 @@
     evtest
 
     # Apps
-    vscode
     mpv
-    thunderbird
-    brave
     vesktop
-    modrinth-app
-    kdePackages.discover
     firefox
-    easyeffects
     mapscii
     pipes
     jq
     unzip
     cbonsai
-    gnome-boxes
-    (pkgs.wrapOBS {
-    plugins = with pkgs.obs-studio-plugins; [
-      wlrobs
-      obs-pipewire-audio-capture
-      obs-vkcapture
-     ];
-    })
    ];
 
   # Some programs need SUID wrappers, can be configured further or are
@@ -304,12 +255,6 @@
   # networking.firewall.allowedUDPPorts = [ ... ];
   # Or disable the firewall altogether.
   # networking.firewall.enable = false;
-
-  fileSystems."/home/royalc/Jeux" = {
-    device = "/dev/disk/by-uuid/1088E3AA88E38D12";
-    fsType = "ntfs-3g"; # ou ntfs3
-    options = [ "rw" "uid=1000" "gid=100" "nofail" ];
-  };
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
