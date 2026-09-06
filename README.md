@@ -25,11 +25,17 @@ Vérifie que ton identifiant Unix local correspond bien dans les fichiers suivan
 
   flake.nix : home-manager.users.<username>
     
-6. Déployer la configuration:
+6. Changer le nom de l'écran.
+
+sudo nano/vim ~/nixos-config/dorfiles/hype/hyprland.conf
+
+changer le hdmi-a-2 au nom de votre écran
+
+7. Déployer la configuration:
 
 Indexe les changements matériels dans Git et relance la reconstruction système :
 
 git add . |
 sudo nixos-rebuild switch --flake .#nixos
 
-7. lance hyprland
+8. lance hyprland
