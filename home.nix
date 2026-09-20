@@ -8,7 +8,10 @@
 
   #fasfetch 3D
  
-  imports = [ inputs.areofyl-fetch.homeManagerModules.default ];
+  imports = [
+    inputs.areofyl-fetch.homeManagerModules.default
+    inputs.hyprland.homeManagerModules.default
+  ];
   
   programs.fetch = {
     enable = true;
@@ -30,8 +33,21 @@
     speed = 1.0;
     spin = "xy";
   };
-  
 
+  gtk = {
+    enable = true;
+    theme = {
+      name = "Adwaita-dark";
+      package = pkgs.gnome-themes-extra;
+    };
+    gtk4.theme = config.gtk.theme;
+  };
+
+  dconf.settings = {
+    "org/gnome/desktop/interface" = {
+      color-scheme = "prefer-dark";
+    };
+  };
 
   # This value determines the Home Manager release that your configuration is
   # compatible with. This helps avoid breakage when a new Home Manager release
@@ -102,6 +118,7 @@
 
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
+  home.file.".gtkrc-2.0".force = true; # Ou active le backup automatique
   
  programs.bash = {
     enable = true;

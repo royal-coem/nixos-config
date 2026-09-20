@@ -5,7 +5,10 @@
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     home-manager.url = "github:nix-community/home-manager";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
-    
+   
+    # On épingle Hyprland à une version antérieure via un commit ou une balise (tag)
+    hyprland.url = "github:hyprwm/Hyprland/v0.56.1"; # Remplace par la dernière version non-lua souhaitée
+
     # Le fetch 3D que tu voulais ajouter !
     areofyl-fetch.url = "github:areofyl/fetch";
   };

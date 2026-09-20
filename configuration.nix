@@ -17,6 +17,8 @@
   boot.loader.grub.device = "nodev";
   boot.loader.grub.useOSProber = true;
 
+  hardware.amdgpu.initrd.enable = true;
+
   networking.hostName = "nixos"; # Define your hostname.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
 
@@ -26,6 +28,8 @@
 
   # Enable networking
   networking.networkmanager.enable = true;
+
+  virtualisation.docker.enable = true;
 
   # Set your time zone.
   time.timeZone = "Europe/Paris";
@@ -66,7 +70,7 @@
   console.keyMap = "fr";
 
   # Enable CUPS to print documents.
-  services.printing.enable = true;
+  services.printing.enable = false;
 
   # Enable sound with pipewire.
   services.pulseaudio.enable = false;
@@ -87,6 +91,18 @@
   # Enable touchpad support (enabled default in most desktopManager).
   # services.xserver.libinput.enable = true;
 
+
+  hardware.graphics = {
+    enable = true;
+    extraPackages = with pkgs; [
+      rocmPackages.clr
+      rocmPackages.clr.icd
+      rocmPackages.hipblas
+      rocmPackages.rocblas
+     ];
+   };
+
+
   programs.zsh = {
     enable = true;
     autosuggestions.enable = true;
@@ -94,7 +110,7 @@
     promptInit = "source ${pkgs.zsh-powerlevel10k}/share/zsh-powerlevel10k/powerlevel10k.zsh-theme";
   
     interactiveShellInit = ''
-    fetch
+    fastfetch
   '';
 
   shellAliases = {
@@ -106,6 +122,7 @@
     nixlist = "sudo nixos-rebuild list-generations";
     delconf = "sudo nix-env --profile /nix/var/nix/profiles/system --delete-generations";
     nixclean = "sudo nix-collect-garbage -d";
+    nixopti = "sudo nix-store --optimise";
   };
  };
  
@@ -150,12 +167,26 @@
     ];
   };
 
+  # 1. Activer WiVRn et le pare-feu
+  services.wivrn = {
+    enable = true;
+    openFirewall = true; 
+  };
+
+  # 3. Règles udev pour le Meta Quest
+  services.udev.extraRules = ''
+    SUBSYSTEM=="usb", ATTR{idVendor}=="2833", MODE="0666", GROUP="adbusers"
+  '';
+
+  # 4. Empêcher la mise en veille USB du noyau
+  boot.kernelParams = [ "usbcore.autosuspend=-1" ];
+
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users."royalc" = {
     isNormalUser = true;
     description = "royalc";
     shell = pkgs.zsh;
-    extraGroups = [ "networkmanager" "wheel" "libvirtd" "kvm" ];
+    extraGroups = [ "networkmanager" "wheel" "libvirtd" "kvm" "docker" "adbusers" ];
     packages = with pkgs; [
       kdePackages.kate
       # UI & Desktop
@@ -183,7 +214,6 @@
       pinta
   
       # Apps
-      vscode
       mpv
       # thunderbird
     ];
@@ -197,7 +227,14 @@
     enable = true;
     remotePlay.openFirewall = true; # Optionnel
     dedicatedServer.openFirewall = true; # Optionnel
+    package = pkgs.steam.override {
+      extraPkgs = pkgs: with pkgs; [
+        libcap
+      ];
+    };
   };
+
+
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
 
@@ -254,11 +291,12 @@
     libnotify
     wev
     evtest
-
+    android-tools
+    r2modman
+    os-prober
+    
     # Apps
-    vscode
     mpv
-    thunderbird
     brave
     vesktop
     modrinth-app
@@ -271,13 +309,7 @@
     unzip
     cbonsai
     gnome-boxes
-    (pkgs.wrapOBS {
-    plugins = with pkgs.obs-studio-plugins; [
-      wlrobs
-      obs-pipewire-audio-capture
-      obs-vkcapture
-     ];
-    })
+    lutris
    ];
 
   # Some programs need SUID wrappers, can be configured further or are
@@ -308,7 +340,12 @@
   fileSystems."/home/royalc/Jeux" = {
     device = "/dev/disk/by-uuid/1088E3AA88E38D12";
     fsType = "ntfs-3g"; # ou ntfs3
-    options = [ "rw" "uid=1000" "gid=100" "nofail" ];
+    options = [ "rw" "uid=1000" "gid=1000" "nofail" ];
+  };
+ 
+  fileSystems."/home/royalc/SteamSSD" = {
+    device = "/dev/disk/by-uuid/df9436db-e851-49b9-a613-12229655b63b";
+    fsType = "ext4";
   };
 
   # This value determines the NixOS release from which the default
