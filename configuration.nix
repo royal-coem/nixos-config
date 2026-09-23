@@ -66,7 +66,7 @@
   console.keyMap = "fr";
 
   # Enable CUPS to print documents.
-  services.printing.enable = true;
+  services.printing.enable = false;
 
   # Enable sound with pipewire.
   services.pulseaudio.enable = false;
@@ -157,12 +157,6 @@
   # Install firefox
   programs.firefox.enable = true;
 
-  # 2. Activer le module Steam
-  programs.steam = {
-    enable = true;
-    remotePlay.openFirewall = true; # Optionnel
-    dedicatedServer.openFirewall = true; # Optionnel
-  };
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
 
