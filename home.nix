@@ -49,6 +49,20 @@
     };
   };
 
+  xdg.desktopEntries.gparted-root = {
+  name = "GParted (Root)";
+  exec = "${pkgs.writeShellScript "launch-gparted" ''
+      xhost +si:localuser:root
+      pkexec gparted
+    ''}";
+    icon = "gparted";
+    categories = [ "System" ];
+  };
+ 
+  home.sessionPath = [
+    "$HOME/.local/bin"
+  ];
+
   # This value determines the Home Manager release that your configuration is
   # compatible with. This helps avoid breakage when a new Home Manager release
   # introduces backwards incompatible changes.
@@ -118,9 +132,10 @@
 
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
-  home.file.".gtkrc-2.0".force = true; # Ou active le backup automatique
-  
- programs.bash = {
+  home.preferXdgDirectories = true;
+  home.backupFileExtension = "backup";
+
+  programs.bash = {
     enable = true;
     initExtra = ''
       if [[ $- == *i* ]]; then

@@ -16,6 +16,7 @@
   boot.loader.efi.canTouchEfiVariables = true;
   boot.loader.grub.device = "nodev";
   boot.loader.grub.useOSProber = true;
+  boot.loader.grub.default = "osprober-efi-1581-6F10";
 
   hardware.amdgpu.initrd.enable = true;
 
@@ -80,6 +81,32 @@
     alsa.enable = true;
     alsa.support32Bit = true;
     pulse.enable = true;
+
+    # Script PipeWire pour créer le sink virtuel "Desktop Audio"
+    extraConfig.pipewire."10-virtual-sink.conf" = {
+      "context.objects" = [
+        {
+          factory = "adapter";
+          args = {
+            "factory.name" = "support.null-audio-sink";
+            "node.name" = "Desktop-Audio";
+            "node.description" = "Son Systeme Sans Discord";
+            "media.class" = "Audio/Sink";
+            "audio.position" = ["FL" "FR"];
+          };
+        }
+        {
+           name = "libpipewire-module-loopback";
+           args = {
+             "node.description" = "Retour Desktop-Audio vers Casque";
+             "capture.props" = {
+               "target.object" = "Desktop-Audio";
+           };
+          };
+         }
+       ];
+     };
+
     # If you want to use JACK applications, uncomment this
     #jack.enable = true;
 
@@ -90,7 +117,6 @@
 
   # Enable touchpad support (enabled default in most desktopManager).
   # services.xserver.libinput.enable = true;
-
 
   hardware.graphics = {
     enable = true;
@@ -123,6 +149,9 @@
     delconf = "sudo nix-env --profile /nix/var/nix/profiles/system --delete-generations";
     nixclean = "sudo nix-collect-garbage -d";
     nixopti = "sudo nix-store --optimise";
+    nix-shell-free="NIXPKGS_ALLOW_UNFREE=1 NIXPKGS_ALLOW_INSECURE=1 nix-shell";
+    nix-run-free="NIXPKGS_ALLOW_UNFREE=1 NIXPKGS_ALLOW_INSECURE=1 nix run";
+    nixupdate= " (cd ~/nixos-config && nix flake update) ";
   };
  };
  
@@ -134,25 +163,38 @@
 
   virtualisation.libvirtd = {
     enable = true;
-    qemu = {
-      package = pkgs.qemu_kvm;
-      runAsRoot = true;
-    };
-
   };
+
+  programs.virt-manager.enable = true;
+
+  security.polkit.enable = true;
  
+  boot.loader.grub.extraEntries = ''
+    menuentry "Windows 11" {
+      insmod part_gpt
+      insmod fat
+      insmod chain
+      search --fs-uuid --set=root 1F34-70AD
+      chainloader /EFI/Microsoft/Boot/bootmgfw-orig.efi
+     }
+  '';
+
   xdg.portal = {
     enable = true;
     extraPortals = [
       pkgs.xdg-desktop-portal-hyprland
       pkgs.xdg-desktop-portal-gtk
+      pkgs.kdePackages.xdg-desktop-portal-kde
     ];
     config = {
       common = {
-        default = [ "hyprland" "gtk" ];
+        default = [  "gtk"  ];
       };
       hyprland = {
         default = [ "hyprland" "gtk" ];
+      };
+      kde = {
+        default = [ "kde" "gtk" ];
       };
     };
   };
@@ -246,6 +288,12 @@
 
   systemd.services.packagekit.wantedBy = [ "multi-user.target" ];
 
+  programs.nix-ld.enable = true;
+  programs.nix-ld.libraries = with pkgs; [
+    stdenv.cc.cc
+    zlib
+  ];
+
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
@@ -263,6 +311,7 @@
     jdk17
     jdk21
     jdk25
+    xhost
 
     # UI & Desktop
     rofi
@@ -292,8 +341,13 @@
     wev
     evtest
     android-tools
-    r2modman
     os-prober
+    (python3.withPackages (ps: [
+      ps.websockets
+    ]))
+    qt6.qtwebsockets
+    kdePackages.qtwebsockets
+    
     
     # Apps
     mpv
@@ -308,9 +362,14 @@
     jq
     unzip
     cbonsai
-    gnome-boxes
     lutris
-   ];
+    kdePackages.polkit-kde-agent-1
+    gparted
+    libreoffice-qt
+    hunspell
+    hunspellDicts.uk_UA
+    hunspellDicts.th_TH
+    ];
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
